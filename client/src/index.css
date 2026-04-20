@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* You can keep your other CSS below this line */
 body {
-  margin: 0;
+  background-color: rgb(241, 245, 241);
 }
