@@ -1,13 +1,20 @@
-import express from 'express'
+import express from 'express';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv'
-dotenv.config()
-import userRouter from './routes/user.route.js'
-import authRouter from './routes/auth.route.js'
+import dotenv from 'dotenv';
+import userRouter from './routes/user.route.js';
+import authRouter from './routes/auth.route.js';
+import listingRouter from './routes/listing.route.js';
+import cookieParser from 'cookie-parser';
+import path from 'path';
 
+dotenv.config();
 
-const app=express();
-app.use(express.json())
+const __dirname = path.resolve();
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+
 mongoose
   .connect(process.env.MONGO)
   .then(() => {
@@ -17,8 +24,21 @@ mongoose
     console.log(err);
   });
 
-app.use('/api/user',userRouter)
-app.use('/api/auth',authRouter)
+// API Routes
+app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/listing', listingRouter);
+
+// Serve Static Files
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+// Catch-all route to serve the Frontend Index.html
+// Using (.*) to avoid PathError in Express 5
+app.get(/^(?!\/api).+/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+});
+
+// Error Middleware
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
@@ -29,7 +49,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-
-app.listen(3000,()=>{
-    console.log('Server is running on PORT 3000');
-})
+app.listen(3000, () => {
+  console.log('Server is running on PORT 3000');
+});
