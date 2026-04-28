@@ -7,7 +7,8 @@ export default function OAuth() {
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'http://localhost:5173', // redirect back to app
+          //redirectTo: 'http://localhost:5173', // redirect back to app
+           redirectTo:'window.location.origin',
            skipBrowserRedirect: false,
           queryParams: {
             prompt: 'select_account', // forces account picker to show
